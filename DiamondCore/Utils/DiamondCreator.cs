@@ -6,8 +6,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 using ReactiveUI;
+using Size = System.Drawing.Size;
 
 namespace DiamondCore.Utils
 {
@@ -81,6 +83,13 @@ namespace DiamondCore.Utils
             set => this.RaiseAndSetIfChanged(ref _skipPixelCountH, value);
         }
 
+        private Size _diamondSize;
+        public Size DiamondSize
+        {
+            get => _diamondSize;
+            set => this.RaiseAndSetIfChanged(ref _diamondSize, value);
+        }
+
         private List<DiamondColor> _colorList = DiamondColor.GetAll();
 
         public DiamondCreator(Sbmp image)
@@ -88,22 +97,12 @@ namespace DiamondCore.Utils
             _sourceImage = image;
         }
 
-        public void Create(PaperFormat format, ClusterizationType cType, int extendPixelCount)
+        public void Create(PaperFormat format, Thickness indent, ClusterizationType cType, int extendPixelCount)
         {
-            DiamondCountWidth = (int)((format.Width * g.DPI) / (g.DiamondSize * g.DPI));
-            DiamondCountHeight = (int)((format.Height * g.DPI) / (g.DiamondSize * g.DPI));
-
-            if (format.Width / format.Height < SourceImage.Width / SourceImage.Height)
-            {
-                // по высоте
-                GrabPixelCount = SourceImage.Height / DiamondCountHeight;
-            }
-            else
-            {
-                GrabPixelCount = SourceImage.Width / DiamondCountWidth;
-            }
-            //SkipPixelCountW = (SourceImage.Width  - GrabPixelCount * DiamondCountWidth)  / 2;
-            //SkipPixelCountH = (SourceImage.Height - GrabPixelCount * DiamondCountHeight) / 2;
+            DiamondSize = new Size(format.Width - (int) indent.Left - (int) indent.Right, format.Height - (int) indent.Top - (int) indent.Bottom);
+            GrabPixelCount = DiamondSize.Width / DiamondSize.Height < SourceImage.Width / SourceImage.Height ? SourceImage.Height / (int) ((DiamondSize.Height) / (g.DiamondSize * g.DPI)) : SourceImage.Width / (int) ((DiamondSize.Width) / (g.DiamondSize * g.DPI));
+            DiamondCountWidth  = SourceImage.Width  / GrabPixelCount;
+            DiamondCountHeight = SourceImage.Height / GrabPixelCount;
             DiamondMap      = new DiamondColor[DiamondCountWidth, DiamondCountHeight];
             Pixelize();
         }
@@ -113,6 +112,11 @@ namespace DiamondCore.Utils
             for(var i = 0; i < DiamondCountWidth; i++)
             for (var j = 0; j < DiamondCountHeight; j++)
                 DiamondMap[i, j] = FindClosestColor(GetAbsColor(i * GrabPixelCount + SkipPixelCountW, j * GrabPixelCount + SkipPixelCountH, GrabPixelCount, 0));
+        }
+
+        public void CreateResultImage()
+        {
+
         }
 
         public void SaveTestImage()

@@ -42,10 +42,10 @@ namespace DiamondCore.Utils
 
         public static List<PaperFormat> GetFullList() => new()
                                                          {
-                                                             new PaperFormat("A1", (int) Math.Round((g.DPI / 25.4) * 840, 0), (int) Math.Round((g.DPI / 25.4) * 594, 0)),
-                                                             new PaperFormat("A2", (int) Math.Round((g.DPI / 25.4) * 594, 0), (int) Math.Round((g.DPI / 25.4) * 420, 0)),
-                                                             new PaperFormat("A3", (int) Math.Round((g.DPI / 25.4) * 420, 0), (int) Math.Round((g.DPI / 25.4) * 297, 0)),
-                                                             new PaperFormat("A4", (int) Math.Round((g.DPI / 25.4) * 297, 0), (int) Math.Round((g.DPI / 25.4) * 210, 0))
+                                                             new PaperFormat("A1", (int) Math.Round(g.DPI * 840, 0), (int) Math.Round(g.DPI * 594, 0)),
+                                                             new PaperFormat("A2", (int) Math.Round(g.DPI * 594, 0), (int) Math.Round(g.DPI * 420, 0)),
+                                                             new PaperFormat("A3", (int) Math.Round(g.DPI * 420, 0), (int) Math.Round(g.DPI * 297, 0)),
+                                                             new PaperFormat("A4", (int) Math.Round(g.DPI * 297, 0), (int) Math.Round(g.DPI * 210, 0))
                                                          };
 
         public static PaperFormat GetByName(string name) => GetFullList().FirstOrDefault(_ => _.Name == name) ?? GetFullList().First(_ => _.Name == "A4");
