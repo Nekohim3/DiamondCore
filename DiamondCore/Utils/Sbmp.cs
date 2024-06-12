@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using Color = System.Windows.Media.Color;
+using Color = System.Drawing.Color;
 
 namespace DiamondCore.Utils
 {
