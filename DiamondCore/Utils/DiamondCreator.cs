@@ -83,11 +83,11 @@ namespace DiamondCore.Utils
             set => this.RaiseAndSetIfChanged(ref _skipPixelCountH, value);
         }
 
-        private Size _diamondSize;
-        public Size DiamondSize
+        private Size _diamondImageSizePx;
+        public Size DiamondImageSizePx
         {
-            get => _diamondSize;
-            set => this.RaiseAndSetIfChanged(ref _diamondSize, value);
+            get => _diamondImageSizePx;
+            set => this.RaiseAndSetIfChanged(ref _diamondImageSizePx, value);
         }
 
         private List<DiamondColor> _colorList = DiamondColor.GetAll();
@@ -99,8 +99,8 @@ namespace DiamondCore.Utils
 
         public void Create(PaperFormat format, Thickness indent, ClusterizationType cType, int extendPixelCount)
         {
-            DiamondSize = new Size(format.Width - (int) indent.Left - (int) indent.Right, format.Height - (int) indent.Top - (int) indent.Bottom);
-            GrabPixelCount = DiamondSize.Width / DiamondSize.Height < SourceImage.Width / SourceImage.Height ? SourceImage.Height / (int) ((DiamondSize.Height) / (g.DiamondSize * g.DPI)) : SourceImage.Width / (int) ((DiamondSize.Width) / (g.DiamondSize * g.DPI));
+            DiamondImageSizePx = new Size(format.Width - (int) indent.Left - (int) indent.Right, format.Height - (int) indent.Top - (int) indent.Bottom);
+            GrabPixelCount = DiamondImageSizePx.Width / DiamondImageSizePx.Height < SourceImage.Width / SourceImage.Height ? SourceImage.Height / (int) ((DiamondImageSizePx.Height) / (g.DiamondSize * g.DPI)) : SourceImage.Width / (int) ((DiamondImageSizePx.Width) / (g.DiamondSize * g.DPI));
             DiamondCountWidth  = SourceImage.Width  / GrabPixelCount;
             DiamondCountHeight = SourceImage.Height / GrabPixelCount;
             DiamondMap      = new DiamondColor[DiamondCountWidth, DiamondCountHeight];
@@ -116,9 +116,26 @@ namespace DiamondCore.Utils
 
         public void CreateResultImage()
         {
+            var image = new Sbmp(new byte[g.DiamondSizePx * DiamondCountWidth * g.DiamondSizePx * DiamondCountHeight * 4], DiamondCountWidth * g.DiamondSizePx, DiamondCountHeight * g.DiamondSizePx);
+            for (var i = 0; i < DiamondCountWidth; i++)
+            for (var j = 0; j < DiamondCountHeight; j++)
+            for (var q = 0; q < g.DiamondSizePx; q++)
+            for (var w = 0; w < g.DiamondSizePx; w++)
+            {
+                if (q == 0 || w == 0 || q == g.DiamondSizePx - 1 || w == g.DiamondSizePx - 1)
+                    image.SetPixel(i * g.DiamondSizePx + q, j * g.DiamondSizePx + w, Color.Black);
+                else
+                    image.SetPixel(i * g.DiamondSizePx + q, j * g.DiamondSizePx + w, DiamondMap[i, j].Color);
 
+            }
+
+            image.Save("c:\\diatest\\test2.bmp");
         }
 
+        public Color GetLighterColor(Color c)
+        {
+            return Color.FromArgb(255, (int) (c.R * 1.5f), (int) (c.G * 1.5f), (int) (c.B * 1.5f));
+        }
         public void SaveTestImage()
         {
             var testImage = new Sbmp(new byte[DiamondCountWidth * DiamondCountHeight * 4], DiamondCountWidth, DiamondCountHeight);
@@ -168,6 +185,34 @@ namespace DiamondCore.Utils
             }
 
             return Color.FromArgb(255, r / (count * count), g / (count * count), b / (count * count));
+        }
+    }
+
+    public static class Test
+    {
+
+        public static Color Lerp(this Color colour, Color to, float amount)
+        {
+            // start colours as lerp-able floats
+            float sr = colour.R, sg = colour.G, sb = colour.B;
+
+            // end colours as lerp-able floats
+            float er = to.R, eg = to.G, eb = to.B;
+
+            // lerp the colours to get the difference
+            byte r = (byte)sr.Lerp(er, amount),
+                 g = (byte)sg.Lerp(eg, amount),
+                 b = (byte)sb.Lerp(eb, amount);
+
+            // return the new colour
+            return Color.FromArgb(r, g, b);
+        }
+
+        public static float Lerp(this float start, float end, float amount)
+        {
+            float difference = end - start;
+            float adjusted   = difference * amount;
+            return start + adjusted;
         }
     }
 }

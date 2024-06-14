@@ -27,8 +27,8 @@ namespace DiamondCore
         public MainWindow()
         {
             var q = new DiamondCreator(new Sbmp("C:\\Users\\Nekohime\\Pictures\\Алмазная Зая\\2.png"));
-            q.Create(PaperFormat.GetByName("A4"), ClusterizationType.Sphere, 0);
-            q.SaveTestImage();
+            q.Create(PaperFormat.GetByName("A1"), new Thickness(0), ClusterizationType.Sphere, 0);
+            q.CreateResultImage();
             InitializeComponent();
             DataContext = new MainWindowViewModel();
         }

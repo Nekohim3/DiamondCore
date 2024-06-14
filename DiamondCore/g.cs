@@ -14,7 +14,7 @@ namespace DiamondCore
         public static int       DPIinch       { get; set; } = 300; //пикселей на дюйм (118.11 пикселей на см)
         public static float     DPI           => DPIinch / 25.4f;  //пикселей на мм
         public static float     DiamondSize   { get; set; } = 2.5f;  // в мм
-        public static int       DiamondSizePx { get; set; } = 45;
+        public static int       DiamondSizePx { get; set; } = (int)(DPI * DiamondSize);
         public static Thickness Margin        { get; set; } = new(2, 2, 2, 2); //отступы от краев бумаги
         public static int       GridWidth     { get; set; } = 1;
 
